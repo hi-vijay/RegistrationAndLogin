@@ -20,8 +20,8 @@ const AppButton = props => {
   console.log('loginText= ', loginText);
 
   const backgroundColor = {
-    backgroundColor: isEnable ? 'dodgerblue' : 'darkgrey',
-    elevation: isEnable ? 4 : 0,
+    borderColor: isEnable ? 'dodgerblue' : '#cfd2d4',
+    backgroundColor: isEnable ? 'dodgerblue' : '#cfd2d4',
   };
   const textColor = {
     color: isEnable ? 'white' : 'grey',
@@ -29,12 +29,12 @@ const AppButton = props => {
   return (
     <Pressable
       onPress={onLoginClicked}
-      style={[styles.mainContainer, backgroundColor, style]}>
+      style={[styles.mainContainer, style, backgroundColor]}>
       <Text style={[styles.text, textColor]}>{loginText}</Text>
 
       <View style={styles.indicator}>
         {progress ? (
-          <ActivityIndicator color={'white'} style={styles.progressBar} />
+          <ActivityIndicator color={'black'} style={styles.progressBar} />
         ) : null}
       </View>
     </Pressable>
@@ -51,10 +51,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontSize: 24,
-    fontWeight: '500',
-    color: 'grey',
-    paddingVertical: 12,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#878a8c',
+    paddingVertical: 16,
     textAlign: 'center',
   },
   progressBar: {

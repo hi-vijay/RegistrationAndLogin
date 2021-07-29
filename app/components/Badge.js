@@ -1,23 +1,16 @@
 import React from 'react';
-import {View, Image, StyleSheet, Text} from 'react-native';
-
-const colors = {
-  active: '#57AAF4',
-};
+import {View, StyleSheet, Text} from 'react-native';
 
 const Badge = props => {
   const {status} = props.employee;
 
-  const getStatus = status => {
-    const s = status.charAt(0).toUpperCase() + status.slice(1);
+  const getStatus = text => {
+    const s = text.charAt(0).toUpperCase() + text.slice(1);
     return s;
   };
-  console.log(getStatus);
   return (
     <View style={styles.parent}>
-      <Text color="#fff" style={styles.text}>
-        {getStatus(status)}
-      </Text>
+      <Text style={styles.text}>{getStatus(status)}</Text>
     </View>
   );
 };
@@ -29,10 +22,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 3,
     borderRadius: 12,
-    backgroundColor: '#57AAF4',
+    backgroundColor: '#D5F7DA',
   },
   text: {
-    color: '#fff',
+    color: '#009118',
     fontSize: 12,
     fontWeight: '500',
   },

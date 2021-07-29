@@ -1,6 +1,5 @@
 import React, {useRef, useState} from 'react';
 import {View, TextInput, Image, StyleSheet, Pressable} from 'react-native';
-import {LongPressGestureHandler} from 'react-native-gesture-handler';
 
 const ICON_SIZE = 24;
 
@@ -29,7 +28,7 @@ const TextInputLayout = props => {
     borderColor: isFocused ? onFocusColor : '#C7C1C1',
     paddingEnd: secureEntry ? 44 : 10,
   };
-  console.log('startIcon', imageURI);
+
   return (
     <View style={[styles.mainContainer, margin]}>
       {imageURI !== '' ? (
@@ -39,6 +38,7 @@ const TextInputLayout = props => {
       ) : null}
       <TextInput
         ref={inputField}
+        placeholderTextColor={'grey'}
         style={[styles.defaultInput, style, borderColor]}
         secureTextEntry={passwordVisibility}
         onChangeText={val => props.onChangeText(val)}
@@ -81,9 +81,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   defaultInput: {
-    padding: 10,
-    fontSize: 16,
-    fontWeight: '600',
+    paddingVertical: 10,
+    fontSize: 18,
+    fontWeight: '500',
     borderBottomWidth: 2,
   },
   togglePassword: {
