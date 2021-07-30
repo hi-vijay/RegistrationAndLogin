@@ -15,6 +15,9 @@ export const ExitApp = 'Exit App';
 export const ExitAppSubTitle = 'Do you want to exit?';
 export const No = 'No';
 export const Yes = 'Yes';
+export const Delete = 'Delete';
+export const NoUserName = 'Not available';
+export const Wikipedia = 'Wikipedia';
 
 //.........................................................
 // Error

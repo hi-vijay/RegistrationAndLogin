@@ -1,42 +1,54 @@
 import React from 'react';
-import {View, Image, StyleSheet, Text} from 'react-native';
+import {View, Image, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import Badge from '../components/Badge';
 import images from '../res/images';
+import Feather from 'react-native-vector-icons/Feather';
+import * as strings from '../res/strings';
 
+Feather.loadFont();
 const Card = props => {
   console.log('card props= ', props);
   const {name = '', agency, image = '', wikipedia = ''} = props.employee;
+  const {index} = props;
 
   const openProfile = () => {
     props.openProfile(wikipedia);
   };
   return (
-    <View style={styles.rootContainer}>
+    <View
+      style={[styles.rootContainer, {marginTop: props.index === 0 ? 12 : 6}]}>
       {image !== '' ? (
         <Image source={{url: image}} style={styles.profileImage} />
       ) : (
         <Image source={images[0]} style={styles.profileImage} />
       )}
-      {/* User details layout */}
-      <View style={styles.detailsWrapper}>
-        {name !== '' ? (
-          <Text style={styles.name}>{name}</Text>
-        ) : (
-          <Text style={styles.noNameStyle}>Not available</Text>
-        )}
-        <View style={styles.agencyStatusWrapper}>
-          <Text style={styles.agency}>{agency}</Text>
-          <View style={{marginStart: 8}}>
-            <Badge employee={props.employee} />
+      <View style={styles.detailsContainer}>
+        {/* User details layout */}
+        <View style={styles.detailsWrapper}>
+          {name !== '' ? (
+            <Text style={styles.name}>{name}</Text>
+          ) : (
+            <Text style={styles.noNameStyle}>{strings.NoUserName}</Text>
+          )}
+          <View style={styles.agencyStatusWrapper}>
+            <Text style={styles.agency}>{agency}</Text>
+            <View style={{marginStart: 8}}>
+              <Badge employee={props.employee} />
+            </View>
+          </View>
+          <View style={{marginBottom: 12, marginTop: 8}}>
+            {wikipedia !== '' && (
+              <Text onPress={openProfile} style={styles.url}>
+                {strings.Wikipedia}
+              </Text>
+            )}
           </View>
         </View>
-        <View style={{marginBottom: 12, marginTop: 8}}>
-          {wikipedia !== '' && (
-            <Text onPress={openProfile} style={styles.url}>
-              Wikipedia
-            </Text>
-          )}
-        </View>
+        <TouchableOpacity
+          onPress={() => props.onDelete({name, index})}
+          style={styles.deleteIconWrapper}>
+          <Feather name={'trash'} size={22} color={'grey'} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -58,6 +70,11 @@ const styles = StyleSheet.create({
       height: 3,
     },
     elevation: 4,
+  },
+  detailsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   profileImage: {
     width: 60,
@@ -82,6 +99,7 @@ const styles = StyleSheet.create({
   detailsWrapper: {
     flex: 0.9,
     flexDirection: 'column',
+    flexGrow: 1,
   },
   agencyStatusWrapper: {
     flexDirection: 'row',
@@ -96,6 +114,11 @@ const styles = StyleSheet.create({
   url: {
     color: '#086ebd',
     fontSize: 14,
+  },
+  deleteIconWrapper: {
+    marginTop: 16,
+    marginEnd: 16,
+    height: 28,
   },
 });
 

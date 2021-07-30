@@ -4,6 +4,8 @@ export default {
   Registration: 'Registration',
   Login: 'Login',
   Splash: 'Splash',
+  Chat: 'Chat',
+  Profile: 'Profile',
   AuthStack: 'AuthStack',
   DashboardStack: 'DashboardStack',
 };

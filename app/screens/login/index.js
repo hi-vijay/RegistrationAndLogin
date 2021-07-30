@@ -8,6 +8,7 @@ import {addUser} from '../../actions/actions';
 import images from '../../res/images';
 import * as strings from '../../res/strings';
 import Routes from '../../config/routesName';
+import {LargeTitle} from '../../styledComponent/styled';
 
 const Login = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -55,6 +56,10 @@ const Login = ({navigation}) => {
 
   const handleLogin = async () => {
     console.log('selector email', email);
+    navigation.navigate(Routes.DashboardStack);
+    if (loginButtonStatus) {
+      return;
+    }
     if (!loginButtonStatus) {
       return false;
     }
@@ -109,7 +114,8 @@ const Login = ({navigation}) => {
 
       {/* Bottom parent Layout */}
       <View style={styles.bottomLayoutWrapper}>
-        <Text style={styles.welcomeText}>{strings.Welcome}</Text>
+        <LargeTitle>{strings.Welcome}</LargeTitle>
+        {/* <Text style={styles.welcomeText}>{strings.Welcome}</Text> */}
         {/* Input layout */}
         <View style={styles.inputBackground}>
           <TextInputLayout

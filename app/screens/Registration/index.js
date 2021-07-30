@@ -12,6 +12,7 @@ import TextInputLayout from '../../components/TextInputLayout';
 import AppButton from '../../components/AppButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import images from '../../res/images';
+import {LargeTitle, ErrorText} from '../../styledComponent/styled';
 import * as strings from '../../res/strings';
 import Routes from '../../config/routesName';
 
@@ -133,7 +134,8 @@ const RegistrationScreen = ({navigation}) => {
 
       {/* Bottom parent Layout */}
       <View style={styles.bottomLayoutWrapper}>
-        <Text style={styles.welcomeText}>{strings.CreateAccount}</Text>
+        <LargeTitle>{strings.CreateAccount}</LargeTitle>
+        {/* <Text style={styles.welcomeText}>{strings.CreateAccount}</Text> */}
 
         {/* Input layout */}
         <View style={styles.inputBackground}>
@@ -143,7 +145,7 @@ const RegistrationScreen = ({navigation}) => {
             placeholder={strings.Name}
             maxLength={32}
           />
-          <Text style={styles.errorText}>{mErrorName}</Text>
+          <ErrorText>{mErrorName}</ErrorText>
           <View style={{height: 22}} />
           <TextInputLayout
             onChangeText={val => handleEmail(val)}
@@ -151,7 +153,7 @@ const RegistrationScreen = ({navigation}) => {
             maxLength={28}
             style={styles.inputField}
           />
-          <Text style={styles.errorText}>{mErrorEmail}</Text>
+          <ErrorText>{mErrorEmail}</ErrorText>
           <View style={{height: 22}} />
           <TextInputLayout
             onChangeText={val => handlePassword(val)}
@@ -160,7 +162,7 @@ const RegistrationScreen = ({navigation}) => {
             secureEntry={true}
             style={styles.inputField}
           />
-          <Text style={styles.errorText}>{mErrorPassword}</Text>
+          <ErrorText>{mErrorPassword}</ErrorText>
         </View>
         <AppButton
           style={styles.loginButton}
@@ -226,7 +228,6 @@ const styles = StyleSheet.create({
     color: '#EB5053',
     fontSize: 13,
     fontWeight: '400',
-    paddingHorizontal: 4,
   },
   loginButton: {
     marginTop: 44,

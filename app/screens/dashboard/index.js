@@ -41,7 +41,6 @@ const EmployeeList = props => {
   }, []);
 
   const data = useSelector(state => {
-    console.log('selector', state);
     return state;
   });
 
@@ -70,6 +69,29 @@ const EmployeeList = props => {
     );
   };
 
+  const handleDelete = ({name, index}) => {
+    console.log(name, index);
+    Alert.alert(
+      strings.Delete,
+      `Delete ${name}?`,
+      [
+        {
+          text: strings.No,
+          onPress: () => console.log('Cancel Pressed'),
+        },
+        {
+          text: strings.Delete,
+          onPress: () => {
+            const temp = Object.assign([], empList);
+            temp.splice(index, 1);
+            setList(temp);
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   return (
     <View style={styles.rootContainer}>
       {isLoading ? (
@@ -89,8 +111,15 @@ const EmployeeList = props => {
               contentContainerStyle={{paddingBottom: 100}}
               data={empList}
               keyExtractor={({id}, index) => id}
-              renderItem={({item}) => {
-                return <Card employee={item} openProfile={openProfile} />;
+              renderItem={({item, index}) => {
+                return (
+                  <Card
+                    index={index}
+                    employee={item}
+                    openProfile={openProfile}
+                    onDelete={handleDelete}
+                  />
+                );
               }}
             />
           </View>
@@ -127,7 +156,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   listWrapper: {
-    paddingBottom: 80,
+    paddingBottom: 60,
   },
 });
 
