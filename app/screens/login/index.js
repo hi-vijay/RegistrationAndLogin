@@ -57,9 +57,6 @@ const Login = ({navigation}) => {
   const handleLogin = async () => {
     console.log('selector email', email);
     navigation.navigate(Routes.DashboardStack);
-    if (loginButtonStatus) {
-      return;
-    }
     if (!loginButtonStatus) {
       return false;
     }
