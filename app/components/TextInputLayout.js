@@ -1,5 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {View, TextInput, Image, StyleSheet, Pressable} from 'react-native';
+import images from '../assets/imagePath';
 
 const ICON_SIZE = 24;
 
@@ -52,11 +53,7 @@ const TextInputLayout = props => {
           <Pressable onPress={showOrHidePassword}>
             <Image
               style={styles.icon}
-              source={
-                passwordVisibility
-                  ? require('../assets/ic_hide_password.png')
-                  : require('../assets/ic_show_password.png')
-              }
+              source={passwordVisibility ? images[3] : images[4]}
             />
           </Pressable>
         </View>

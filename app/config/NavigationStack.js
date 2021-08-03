@@ -1,39 +1,36 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Login from '../screens/login/index';
-import EmployeeList from '../screens/dashboard/index';
-import RegistrationScreen from '../screens/Registration/index';
+import LoginScreen from '../screens/LoginScreen';
+import DashboardScreen from '../screens/DashboardScreen';
+import RegistrationScreen from '../screens/RegistrationScreen';
 import SplashScreen from '../screens/SpalshScreen';
 import browser from '../screens/Browser';
 import Routes from './routesName';
 import Chat from '../screens/chat';
 import Profile from '../screens/profile';
+import ChatContainer from '../screens/ChatContainer';
 import Feather from 'react-native-vector-icons/Feather';
 
 Feather.loadFont();
 
 const AuthStack = createStackNavigator();
-const DashboardStack = createStackNavigator();
 const AppStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export const AuthStackScreen = () => (
   <AuthStack.Navigator headerMode="none">
-    <AuthStack.Screen name={Routes.Splash} component={SplashScreen} />
-    <AuthStack.Screen name={Routes.Login} component={Login} />
+    <AuthStack.Screen
+      name={Routes.Login}
+      component={LoginScreen}
+      options={{gestureEnabled: false}}
+    />
     <AuthStack.Screen
       name={Routes.Registration}
       component={RegistrationScreen}
+      options={{gestureEnabled: false}}
     />
   </AuthStack.Navigator>
-);
-
-export const DashboardStackScreen = () => (
-  <DashboardStack.Navigator headerMode="none">
-    <DashboardStack.Screen name={Routes.Dashboard} component={EmployeeList} />
-    {/* <DashboardStack.Screen name={Routes.Browser} component={browser} /> */}
-  </DashboardStack.Navigator>
 );
 
 export const TabStackScreen = () => (
@@ -46,7 +43,7 @@ export const TabStackScreen = () => (
     headerMode="none">
     <Tab.Screen
       name={Routes.Dashboard}
-      component={DashboardStackScreen}
+      component={DashboardScreen}
       options={{
         tabBarIcon: props => (
           <Feather name={'home'} size={props.size} color={props.color} />
@@ -81,12 +78,18 @@ export const TabStackScreen = () => (
 
 export const AppStackScreen = () => (
   <AppStack.Navigator headerMode="none">
-    <AppStack.Screen name={Routes.AuthStack} component={AuthStackScreen} />
+    <AuthStack.Screen name={Routes.Splash} component={SplashScreen} />
+    <AppStack.Screen
+      name={Routes.AuthStack}
+      component={AuthStackScreen}
+      options={{gestureEnabled: false}}
+    />
     <AppStack.Screen
       name={Routes.DashboardStack}
       component={TabStackScreen}
       options={{gestureEnabled: false}}
     />
-    <DashboardStack.Screen name={Routes.Browser} component={browser} />
+    <AppStack.Screen name={Routes.Browser} component={browser} />
+    <AppStack.Screen name={Routes.ChatContainer} component={ChatContainer} />
   </AppStack.Navigator>
 );

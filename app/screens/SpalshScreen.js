@@ -1,52 +1,67 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   SafeAreaView,
-  ImageBackground,
   Text,
   ActivityIndicator,
   Image,
+  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import images from '../assets/imagePath';
+import Routes from '../config/routesName';
+import {APP_NAME, LOGIN_STATUS} from '../assets/Strings/strings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import images from '../res/images';
-
-const USER_KEY = 'user_registration_key';
 
 const SplashScreen = ({navigation}) => {
-  const [authToken, setAuthToken] = useState(null);
-  const [isLoading, setLoading] = useState(false);
+  const [loginLoadingState, setLoginState] = useState({
+    isLoading: true,
+    loginStatus: false,
+  });
 
-  const gotoDashBoard = () => {
-    //navigation.navigate('DashboardStack');
-    navigation.navigate('Login');
-  };
-
-  console.log('welcome');
-  useEffect(() => {
-    console.log('effects');
-    async function getAuthToken() {
-      console.log('calling');
+  const checkIfLogin = () =>
+    new Promise(async (resolve, reject) => {
       try {
-        const user = await AsyncStorage.getItem(USER_KEY);
-        if (user !== null && user !== undefined) {
-          const value = JSON.parse(user);
-          if (value.authToken !== undefined) {
-            console.log('f');
-            setAuthToken(value.authToken);
-          }
-        }
-        console.log('tuer');
-        gotoDashBoard();
-        setLoading(false);
+        const login = await AsyncStorage.getItem(LOGIN_STATUS);
+        resolve(login === null ? false : login === 'true');
+        return;
       } catch (e) {
-        console.log('catch');
-        console.log(e);
-        setLoading(false);
+        reject(false);
+      }
+    });
+
+  useEffect(() => {
+    checkIfLogin()
+      .then(value => {
+        setLoginState({
+          loginStatus: value,
+          isLoading: false,
+        });
+      })
+      .catch(error => {
+        console.log('error ', error);
+        setLoginState({
+          loginStatus: false,
+          isLoading: false,
+        });
+      });
+    return () => null;
+  }, []);
+
+  const changeScreen = () => {
+    if (!loginLoadingState.isLoading) {
+      if (loginLoadingState.loginStatus) {
+        navigation.navigate(Routes.DashboardStack);
+      } else {
+        navigation.navigate(Routes.AuthStack);
       }
     }
-    getAuthToken();
-  }, []);
+  };
+
+  //ForwardRef(BaseNavigationContainer) bug resolved
+  setTimeout(() => {
+    changeScreen();
+  }, 1000);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -55,13 +70,13 @@ const SplashScreen = ({navigation}) => {
           <Image style={styles.splashImage} source={images[0]} />
         </View>
         <ActivityIndicator color="black" />
-        <View style={styles.titleWrapper}>
-          <Text style={styles.bottomTitle}>SpaceX</Text>
+        <TouchableOpacity style={styles.titleWrapper}>
+          <Text style={styles.bottomTitle}>{APP_NAME}</Text>
           <Image
             style={{width: 24, height: 24, marginStart: 12}}
             source={images[7]}
           />
-        </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -101,3 +116,10 @@ const styles = StyleSheet.create({
 });
 
 export default SplashScreen;
+/*  function onAuthStateChanged(firebaseuser) {
+    console.log('user ', firebaseuser);
+    setUser(firebaseuser);
+    if (isLoading) {
+      setLoading(false);
+    }
+  } */

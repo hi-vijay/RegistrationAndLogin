@@ -11,7 +11,7 @@ const AppButton = props => {
   console.log('props= ', props);
   const {
     onLoginClicked,
-    progress = true,
+    progress = false,
     loginText = 'Login',
     isEnable = true,
     style = {},
@@ -34,7 +34,7 @@ const AppButton = props => {
 
       <View style={styles.indicator}>
         {progress ? (
-          <ActivityIndicator color={'black'} style={styles.progressBar} />
+          <ActivityIndicator color={'white'} style={styles.progressBar} />
         ) : null}
       </View>
     </Pressable>

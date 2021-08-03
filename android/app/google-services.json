@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1059530663618",
+    "project_id": "reactnativefirebase-5987a",
+    "storage_bucket": "reactnativefirebase-5987a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059530663618:android:8c5dddd89b66b581023d5b",
+        "android_client_info": {
+          "package_name": "com.registerandlogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1059530663618-m8jtki315ouu84gm9v8vge53ia6pq2ae.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRPsWXcfe4Z3BFDMHebu1Nxg1SxaBbyT0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1059530663618-m8jtki315ouu84gm9v8vge53ia6pq2ae.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

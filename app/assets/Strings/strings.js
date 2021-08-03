@@ -18,6 +18,14 @@ export const Yes = 'Yes';
 export const Delete = 'Delete';
 export const NoUserName = 'Not available';
 export const Wikipedia = 'Wikipedia';
+export const PRIVACY_POLICY = 'Privacy Policy';
+export const IMPRINT = 'Imprint';
+export const ENGLISH = 'English';
+export const HELP = 'How can we help you?';
+export const CURRENT_YEAR = '2021';
+export const LOGOUT = 'Logout';
+export const LOGOUT_MESSAGE = 'Do you want to Logout?';
+//export const ;
 
 //.........................................................
 // Error
@@ -35,7 +43,24 @@ export const ErrorLowerCaseLetterIsMissing =
 
 //.........................................................
 
-// AsyncStorage Keys  --------------------------------------------------
+// AsyncStorage Keys  -------------------------------------
 export const USER_REGISTRATION_KEY = 'userRegistrationKey';
+export const LOGIN_STATUS = 'userLoginStatus';
 
-//---------------------------------------------------
+//Firebase error codes -------------------------------------
+export const WEAK_PASSWORD = 'auth/weak-password';
+
+//Pasword reset
+export const EXPIRED_CODE = 'auth/expired-action-code';
+export const INVALID_CODE = 'auth/invalid-action-code';
+export const USER_DISABLED = 'auth/user-disabled';
+export const USER_NOT_FOUND = 'auth/user-not-found';
+
+//SIGN UP
+export const USER_ALREADY_EXIST = 'auth/email-already-in-use';
+export const INVALID_EMAIL = 'auth/invalid-email';
+export const OPRATION_NOT_ALLOWED = 'auth/operation-not-allowed'; // ENABLE AUTH SERVICE FROM FIREABSE CONSOLE
+
+//LOGIN
+export const INCORRECT_PASSWORD = 'auth/wrong-password';
+export const TOO_MANY_REQ = 'auth/too-many-requests';
