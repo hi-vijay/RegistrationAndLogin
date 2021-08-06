@@ -1,4 +1,5 @@
 import React from 'react';
+import {Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LoginScreen from '../screens/LoginScreen';
@@ -77,7 +78,7 @@ export const TabStackScreen = () => (
 );
 
 export const AppStackScreen = () => (
-  <AppStack.Navigator headerMode="none">
+  <AppStack.Navigator screenOptions={{headerShown: false}}>
     <AuthStack.Screen name={Routes.Splash} component={SplashScreen} />
     <AppStack.Screen
       name={Routes.AuthStack}
@@ -90,6 +91,14 @@ export const AppStackScreen = () => (
       options={{gestureEnabled: false}}
     />
     <AppStack.Screen name={Routes.Browser} component={browser} />
-    <AppStack.Screen name={Routes.ChatContainer} component={ChatContainer} />
+    <AppStack.Screen
+      name={Routes.ChatContainer}
+      component={ChatContainer}
+      options={({route}) => ({
+        title: route.params.name,
+        headerShown: true,
+        headerBackTitle: false,
+      })}
+    />
   </AppStack.Navigator>
 );

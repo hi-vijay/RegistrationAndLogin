@@ -10,7 +10,7 @@ const ChatBox = props => {
   };
   return (
     <TouchableOpacity
-      onPress={() => openChat(name)}
+      onPress={() => openChat(props.chat)}
       activeOpacity={0.8}
       style={styles.rootContainer}>
       <Image source={userImage} style={styles.userImageStyle} />
@@ -70,13 +70,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
     flex: 0.8,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '400',
     color: 'grey',
   },
   time: {
     marginEnd: 12,
     flex: 0.15,
     color: 'grey',
+    fontWeight: '400',
   },
   separatorLine: {
     height: 1,

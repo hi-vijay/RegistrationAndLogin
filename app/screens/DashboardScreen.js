@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Image,
   BackHandler,
   StyleSheet,
 } from 'react-native';
@@ -15,6 +16,7 @@ import {FetchData} from '../api/apiCall';
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector} from 'react-redux';
 import Card from '../components/EmployeeCard';
+import images from '../assets/imagePath';
 import {
   ExitApp,
   ExitAppSubTitle,
@@ -104,24 +106,30 @@ const EmployeeList = props => {
               style={styles.backIconWrapper}>
               <Feather name="chevron-left" size={24} color={'black'} />
             </TouchableOpacity>
-            <Text style={styles.titleStyle}>{data.userName}</Text>
+            <Text style={styles.titleStyle}>Dashboard</Text>
           </View>
           <View style={styles.listWrapper}>
-            <FlatList
-              contentContainerStyle={{paddingBottom: 100}}
-              data={empList}
-              keyExtractor={({id}, index) => id}
-              renderItem={({item, index}) => {
-                return (
-                  <Card
-                    index={index}
-                    employee={item}
-                    openProfile={openProfile}
-                    onDelete={handleDelete}
-                  />
-                );
-              }}
-            />
+            {empList.length !== 0 ? (
+              <FlatList
+                contentContainerStyle={{paddingBottom: 100}}
+                data={empList}
+                keyExtractor={({id}, index) => id}
+                renderItem={({item, index}) => {
+                  return (
+                    <Card
+                      index={index}
+                      employee={item}
+                      openProfile={openProfile}
+                      onDelete={handleDelete}
+                    />
+                  );
+                }}
+              />
+            ) : (
+              <View style={styles.emptyImageWrapper}>
+                <Image source={images[11]} style={styles.emptyListImage} />
+              </View>
+            )}
           </View>
         </SafeAreaView>
       )}
@@ -137,7 +145,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#eee',
   },
   backIconWrapper: {
     marginStart: 16,
@@ -157,6 +165,17 @@ const styles = StyleSheet.create({
   },
   listWrapper: {
     paddingBottom: 60,
+  },
+  emptyImageWrapper: {
+    flex: 1,
+    alignSelf: 'center',
+    backgroundColor: 'red',
+    marginTop: '40%',
+  },
+  emptyListImage: {
+    width: 240,
+    height: 240,
+    alignSelf: 'center',
   },
 });
 

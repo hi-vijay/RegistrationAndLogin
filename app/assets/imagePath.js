@@ -10,6 +10,7 @@ const images = [
   require('./images/ic_splash.png'),
   require('./images/ic_user.png'),
   require('./images/images.webp'), //10
+  require('./images/ic_empty_box.png'),
 ];
 
 export const PROFILE_IMAGES = [require('./images/ic_astronaut.png')];

@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   deleteIconWrapper: {
-    marginTop: 16,
+    marginTop: 18,
     marginEnd: 16,
     height: 28,
   },

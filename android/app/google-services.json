@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1059530663618",
+    "firebase_url": "https://reactnativefirebase-5987a-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "reactnativefirebase-5987a",
     "storage_bucket": "reactnativefirebase-5987a.appspot.com"
   },
@@ -29,6 +30,13 @@
             {
               "client_id": "1059530663618-m8jtki315ouu84gm9v8vge53ia6pq2ae.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1059530663618-4mmdhe0c1m79ngssj47p3a2lr09nvma9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.RegisterAndLogin"
+              }
             }
           ]
         }
