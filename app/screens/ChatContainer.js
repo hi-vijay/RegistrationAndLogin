@@ -1,18 +1,27 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Bubble, GiftedChat, Send} from 'react-native-gifted-chat';
-import {View, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
+import BtnRound from '../components/BtnRoundButton';
+import {launchImageLibrary} from 'react-native-image-picker';
+import storage from '@react-native-firebase/storage';
 
 const Container = ({route}) => {
   const {name, guestUserId} = route.params;
   const [messages, setMessages] = useState([]);
+  const [imageUri, setImageUri] = useState([]);
+  const [isUploading, setUploading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
+  // Listener for any new message
   useEffect(() => {
-    const path = `/users/${currentUserId}/message`;
-    console.log('path=> ', path);
+    const messageContainerPath =
+      currentUserId > guestUserId
+        ? currentUserId + '-' + guestUserId
+        : guestUserId + '-' + currentUserId;
+    const path = `message/${messageContainerPath}`;
 
     const onValueChange = database()
       .ref(path)
@@ -20,41 +29,34 @@ const Container = ({route}) => {
         let peopleArray = [];
         snapshot.forEach(snap => {
           if (snap.exists()) {
-            console.log('exist', snap.val());
             peopleArray.splice(0, 0, snap.val());
           }
         });
         setMessages(peopleArray);
-        console.log('conversation length ', peopleArray.length);
       });
 
     // Stop listening for updates when no longer required
-    return () =>
-      database()
-        .ref(`/users/${currentUserId}/message`)
-        .off('value', onValueChange);
-  }, [currentUserId]);
+    return () => database().ref(path).off('value', onValueChange);
+  }, [currentUserId, guestUserId]);
 
+  // Get the current user's ID
   useEffect(() => {
     const user = auth().currentUser;
     setCurrentUserId(user.uid);
   }, [currentUserId]);
 
   const sendMessage = message => {
-    const path = `/users/${currentUserId}/message`;
-    const guestUserPath = `/users/${guestUserId}/message`;
-
+    console.log('message ', message);
+    const messageContainerPath =
+      currentUserId > guestUserId
+        ? currentUserId + '-' + guestUserId
+        : guestUserId + '-' + currentUserId;
+    const path = `message/${messageContainerPath}`;
     database()
       .ref(path)
       .push()
       .set(...message)
       .then(() => console.log('Data set.'));
-
-    database()
-      .ref(guestUserPath)
-      .push()
-      .set(...message)
-      .then(() => console.log('guest user Data set.'));
     return [];
   };
 
@@ -79,13 +81,72 @@ const Container = ({route}) => {
     );
   };
 
+  const choosePicture = () => {
+    console.log('Pick image');
+    let options = {
+      title: 'You can choose one image',
+      maxWidth: 720,
+      maxHeight: 1080,
+      storageOptions: {
+        skipBackup: true,
+      },
+    };
+    launchImageLibrary(options, args => {
+      console.log('picked');
+      const {didCancel} = args;
+      if (!didCancel) {
+        console.log(args);
+        const {assets} = args;
+        if (assets !== null) {
+          setImageUri(assets[0].uri);
+          uploadImageFile();
+        }
+      }
+    });
+  };
+
+  const uploadImageFile = async () => {
+    const fileName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
+    try {
+      setUploading(true);
+      await storage().ref(fileName).putFile(imageUri);
+      const url = await storage().ref(fileName).getDownloadURL();
+      console.log(url);
+      setUploading(false);
+      const message = [
+        {
+          _id: Date.now(),
+          user: {
+            _id: currentUserId,
+            name: name,
+            avatar: 'https://placeimg.com/140/140/any',
+          },
+          createdAt: Date.now(),
+          image: url,
+        },
+      ];
+      sendMessage(message);
+    } catch (error) {
+      console.log(error);
+      setUploading(false);
+    }
+  };
+
   const renderSend = props => {
     return (
-      <Send {...props}>
-        <View style={styles.sendButtonWrapper}>
-          <Feather name={'send'} size={22} color={'lightgrey'} />
-        </View>
-      </Send>
+      <View style={styles.parentContainer}>
+        <BtnRound
+          icon="camera"
+          iconColor={'white'}
+          size={40}
+          onPress={() => choosePicture()}
+        />
+        <Send {...props}>
+          <View style={styles.sendButtonWrapper}>
+            <Feather name={'send'} size={18} color={'white'} />
+          </View>
+        </Send>
+      </View>
     );
   };
 
@@ -114,14 +175,19 @@ const Container = ({route}) => {
 export default Container;
 
 const styles = StyleSheet.create({
+  parentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+  },
   sendButtonWrapper: {
     backgroundColor: 'dodgerblue',
-    width: 35,
-    height: 35,
+    width: 40,
+    height: 40,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginEnd: 6,
+    marginHorizontal: 6,
   },
 });
 // setMessages([

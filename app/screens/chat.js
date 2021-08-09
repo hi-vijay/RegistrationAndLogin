@@ -14,7 +14,7 @@ import images from '../assets/imagePath';
 const dummyData = [
   {
     id: 1,
-    name: 'Android',
+    name: 'iOS',
     userId: 'VOdY2ljapCWqV38w6xNw5rAYGzA3',
     lastMessage: 'Hi there',
     time: '12:12',
@@ -22,7 +22,7 @@ const dummyData = [
   },
   {
     id: 2,
-    name: 'iOS',
+    name: 'Android',
     userId: 'mBWqoFdssTOn5TFAKug9eVuKZHr1',
     lastMessage: 'Hi there',
     time: '12:12',
@@ -42,11 +42,11 @@ const Chat = ({navigation}) => {
   const card = data => {
     console.log(data);
     if (Platform.OS === 'ios') {
-      if (data.item.name !== 'iOS') {
+      if (data.item.name === 'iOS') {
         return null;
       }
     } else {
-      if (data.item.name !== 'Android') {
+      if (data.item.name === 'Android') {
         return null;
       }
     }

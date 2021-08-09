@@ -18,7 +18,12 @@ const Card = props => {
     <View
       style={[styles.rootContainer, {marginTop: props.index === 0 ? 12 : 6}]}>
       {image !== '' ? (
-        <Image source={{url: image}} style={styles.profileImage} />
+        <Image
+          source={{
+            uri: image,
+          }}
+          style={styles.profileImage}
+        />
       ) : (
         <Image source={images[0]} style={styles.profileImage} />
       )}

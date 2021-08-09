@@ -32,5 +32,13 @@
 	<string>1:1059530663618:ios:6d788bef8c378bc0023d5b</string>
 	<key>DATABASE_URL</key>
 	<string>https://reactnativefirebase-5987a-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like access to your photo gallery</string>
+    <key>NSCameraUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like to use your camera</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like to save photos to your photo gallery</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>$(PRODUCT_NAME) would like to use your microphone (for videos)</string>
 </dict>
 </plist>
