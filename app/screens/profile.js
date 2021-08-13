@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   SafeAreaView,
@@ -34,29 +34,17 @@ Feather.loadFont();
 const Profile = ({navigation}) => {
   const [userName, setName] = useState('Firebase user');
 
-  firebase.auth().onAuthStateChanged(user => {
-    console.log('firebase user, ', user);
-    if (user) {
-      const firebaseUser = user._user;
-      if (firebaseUser) {
-        setName(firebaseUser.displayName);
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      console.log('firebase user, ', user);
+      if (user) {
+        const firebaseUser = user._user;
+        if (firebaseUser) {
+          setName(firebaseUser.displayName);
+        }
       }
-    }
-  });
-
-  //const user = firebase.auth().currentUser;
-  // user
-  //   .updateProfile({
-  //     displayName: 'Vijay',
-  //   })
-  //   .then(() => {
-  //     console.log('update successful');
-  //   })
-  //   .catch(error => {
-  //     // An error occurred
-  //     // ...
-  //     console.log('an error occured ', error);
-  //   });
+    });
+  }, [userName]);
 
   const updateLocalValue = async () => {
     try {
@@ -187,11 +175,11 @@ const Profile = ({navigation}) => {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#f3f6fb',
   },
   rootContentView: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#f3f6fb',
     justifyContent: 'space-between',
   },
   headerWrapper: {
@@ -216,7 +204,6 @@ const styles = StyleSheet.create({
   userNameWrapper: {
     marginStart: 16,
     flex: 1,
-    backgroundColor: 'white',
     flexDirection: 'column',
   },
   profileImage: {
@@ -246,6 +233,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3FAF4',
     marginHorizontal: 14,
     padding: 18,
+    borderWidth: 1,
+    borderColor: '#e1f5ef',
     borderRadius: 14,
   },
   welcomeTextStyle: {fontSize: 15, color: 'grey', fontWeight: '400'},

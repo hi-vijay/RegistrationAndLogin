@@ -70,7 +70,7 @@ BtnRound.propTypes = {
 
 BtnRound.defaultProps = {
   size: 30,
-  color: 'dodgerblue',
+  color: '#0976DA',
   onPress: null,
   customIcon: null,
   iconSize: 18,

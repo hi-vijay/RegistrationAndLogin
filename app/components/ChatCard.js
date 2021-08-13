@@ -2,29 +2,32 @@ import React from 'react';
 import {Text, Image, TouchableOpacity, View, StyleSheet} from 'react-native';
 
 const ChatBox = props => {
-  console.log('chatbox ', props);
-  const {id, name, time, lastMessage, userImage} = props.chat;
+  const {id, name, time, avatar} = props.chat;
   const {lastItem = true} = props;
   const openChat = data => {
     props.onClick(data);
+  };
+  const getTime = () => {
+    const val = time.slice(12, 17);
+    return val;
   };
   return (
     <TouchableOpacity
       onPress={() => openChat(props.chat)}
       activeOpacity={0.8}
       style={styles.rootContainer}>
-      <Image source={userImage} style={styles.userImageStyle} />
+      <Image source={{uri: avatar}} style={styles.userImageStyle} />
       {/* Details */}
       <View style={styles.detailsWrapper}>
         <View style={styles.userNameWrapper}>
           <Text style={styles.userNameStyle}>{name}</Text>
-          <Text style={styles.time}>{time}</Text>
+          {/* <Text style={styles.time}>{getTime(time)}</Text> */}
         </View>
         <Text
           numberOfLines={1}
           ellipsizeMode="tail"
           style={styles.lastMessageStyle}>
-          {lastMessage}
+          Last active {getTime()}
         </Text>
         {!lastItem && <View style={styles.separatorLine} />}
       </View>
@@ -69,9 +72,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginTop: 4,
     flex: 0.8,
-    fontSize: 16,
-    fontWeight: '400',
-    color: 'grey',
+    fontStyle: 'italic',
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#c3c8c9',
   },
   time: {
     marginEnd: 12,

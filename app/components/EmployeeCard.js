@@ -52,7 +52,7 @@ const Card = props => {
         <TouchableOpacity
           onPress={() => props.onDelete({name, index})}
           style={styles.deleteIconWrapper}>
-          <Feather name={'trash'} size={22} color={'grey'} />
+          <Feather name={'trash'} size={22} color={'lightgrey'} />
         </TouchableOpacity>
       </View>
     </View>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: 12,
     shadowOpacity: 14,
-    shadowColor: 'lightgrey',
+    shadowColor: '#e9edf0',
     shadowRadius: 8,
     shadowOffset: {
       width: 2,

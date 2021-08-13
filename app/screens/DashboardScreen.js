@@ -140,12 +140,13 @@ const EmployeeList = props => {
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
+    backgroundColor: '#f3f6fb',
   },
   headerWrapper: {
     flexDirection: 'row',
     paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: '#eee',
+    backgroundColor: '#f3f6fb',
   },
   backIconWrapper: {
     marginStart: 16,

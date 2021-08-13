@@ -14,5 +14,6 @@ const images = [
 ];
 
 export const PROFILE_IMAGES = [require('./images/ic_astronaut.png')];
+export const CHAT_BACKGROUND = require('./images/ic_chat_background.jpeg');
 
 export default images;

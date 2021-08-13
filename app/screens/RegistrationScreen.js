@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useReducer, useState} from 'react';
 import {
   View,
   Image,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import database from '@react-native-firebase/database';
 import TextInputLayout from '../components/TextInputLayout';
 import firebase from '@react-native-firebase/app';
 import AppButton from '../components/AppButton';
@@ -61,7 +62,7 @@ const RegistrationScreen = ({navigation}) => {
     setPasswordError('');
   };
 
-  const saveUserState = async () => {
+  const saveLoginState = async () => {
     try {
       await AsyncStorage.setItem(LOGIN_STATUS, 'true');
     } catch (e) {
@@ -69,19 +70,52 @@ const RegistrationScreen = ({navigation}) => {
     }
   };
 
-  const saveUserName = () => {
-    const user = firebase.auth().currentUser;
-    user
+  const getUid = async () => {
+    const user = await firebase.auth().currentUser;
+    return user.uid;
+  };
+
+  const updateProfile = async () => {
+    const user = await firebase.auth().currentUser;
+    await user
       .updateProfile({
         displayName: mName,
       })
       .then(() => {
         console.log('update successful');
-        navigation.navigate(Routes.DashboardStack);
       })
       .catch(error => {
         console.log('an error occured ', error);
       });
+  };
+
+  const addUser = async () => {
+    const path = 'users';
+    const uid = await getUid();
+    const user = {
+      id: uid,
+      lastMessage: '',
+      time: '12:12',
+      avatar: 'https://placeimg.com/140/140/any',
+      name: mName,
+      uid: uid,
+      email: mEmail,
+    };
+    database()
+      .ref(path)
+      .push()
+      .set(user)
+      .then(() => console.log('Data set.'));
+  };
+
+  const saveDataAndOpenDashboard = async () => {
+    await updateProfile();
+    await saveLoginState();
+    await addUser();
+    setEmail('');
+    navigation.navigate(Routes.DashboardStack, {
+      screen: Routes.Dashboard,
+    });
   };
 
   //Registration button clicked
@@ -92,9 +126,7 @@ const RegistrationScreen = ({navigation}) => {
         .createUserWithEmailAndPassword(mEmail, mPassword)
         .then(() => {
           console.log('User account created & signed in!');
-          saveUserName();
-          saveUserState();
-          // navigation.navigate(Routes.DashboardStack);
+          saveDataAndOpenDashboard();
         })
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {

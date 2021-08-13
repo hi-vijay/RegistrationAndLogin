@@ -8,7 +8,7 @@ import RegistrationScreen from '../screens/RegistrationScreen';
 import SplashScreen from '../screens/SpalshScreen';
 import browser from '../screens/Browser';
 import Routes from './routesName';
-import Chat from '../screens/chat';
+import Chat from '../screens/ChatScreen';
 import Profile from '../screens/profile';
 import ChatContainer from '../screens/ChatContainer';
 import Feather from 'react-native-vector-icons/Feather';
@@ -98,6 +98,9 @@ export const AppStackScreen = () => (
         title: route.params.name,
         headerShown: true,
         headerBackTitle: false,
+        headerStyle: {
+          backgroundColor: '#f3f6fb',
+        },
       })}
     />
   </AppStack.Navigator>

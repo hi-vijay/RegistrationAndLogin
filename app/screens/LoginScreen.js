@@ -88,6 +88,7 @@ const LoginScreen = ({navigation}) => {
       .then(() => {
         saveUserState();
         console.log('User signed in!');
+        setPassword('');
         navigation.navigate(Routes.DashboardStack);
         setProgress(false);
       })

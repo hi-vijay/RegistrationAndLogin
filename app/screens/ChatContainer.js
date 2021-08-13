@@ -1,28 +1,49 @@
 import React, {useState, useEffect} from 'react';
-import {Bubble, GiftedChat, Send} from 'react-native-gifted-chat';
-import {View, Text, StyleSheet} from 'react-native';
+import {GiftedChat, Send} from 'react-native-gifted-chat';
+import {View, StyleSheet} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import BtnRound from '../components/BtnRoundButton';
 import {launchImageLibrary} from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
+import {
+  RenderBubble,
+  RenderInputToolbar,
+  RenderLoading,
+} from '../components/ChatComponents';
 
 const Container = ({route}) => {
-  const {name, guestUserId} = route.params;
+  const {name, email} = route.params;
   const [messages, setMessages] = useState([]);
-  const [imageUri, setImageUri] = useState([]);
-  const [isUploading, setUploading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  // Get the current user's ID
+  const getEmail = async () => {
+    const user = await auth().currentUser;
+    setCurrentUserId(user.uid);
+    setUserEmail(user.email);
+  };
+
+  const filterEmail = email => {
+    if (!email) {
+      console.log('empty value');
+      return '';
+    }
+    email = email.toLowerCase();
+    return email.replace(/\.|@/g, '_');
+  };
 
   // Listener for any new message
   useEffect(() => {
+    getEmail();
+    const user1 = filterEmail(userEmail);
+    const user2 = filterEmail(email);
     const messageContainerPath =
-      currentUserId > guestUserId
-        ? currentUserId + '-' + guestUserId
-        : guestUserId + '-' + currentUserId;
+      user1 > user2 ? user1 + '-' + user2 : user2 + '-' + user1;
     const path = `message/${messageContainerPath}`;
-
     const onValueChange = database()
       .ref(path)
       .on('value', snapshot => {
@@ -37,48 +58,26 @@ const Container = ({route}) => {
 
     // Stop listening for updates when no longer required
     return () => database().ref(path).off('value', onValueChange);
-  }, [currentUserId, guestUserId]);
-
-  // Get the current user's ID
-  useEffect(() => {
-    const user = auth().currentUser;
-    setCurrentUserId(user.uid);
-  }, [currentUserId]);
+  }, [userEmail]);
 
   const sendMessage = message => {
     console.log('message ', message);
+    const user1 = filterEmail(userEmail);
+    const user2 = filterEmail(email);
     const messageContainerPath =
-      currentUserId > guestUserId
-        ? currentUserId + '-' + guestUserId
-        : guestUserId + '-' + currentUserId;
+      user1 > user2 ? user1 + '-' + user2 : user2 + '-' + user1;
     const path = `message/${messageContainerPath}`;
+
+    let temp = message[0];
+    temp.createdAt = Date.now();
+    const newMessage = [temp];
+
     database()
       .ref(path)
       .push()
-      .set(...message)
+      .set(...newMessage)
       .then(() => console.log('Data set.'));
-    return [];
-  };
-
-  const renderBubble = props => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            paddingVertical: 4,
-            borderRadius: 8,
-            borderBottomEndRadius: 0,
-          },
-          left: {
-            backgroundColor: '#f2fdff',
-            paddingVertical: 4,
-            borderRadius: 8,
-            borderBottomStartRadius: 0,
-          },
-        }}
-      />
-    );
+    //return [];
   };
 
   const choosePicture = () => {
@@ -91,28 +90,43 @@ const Container = ({route}) => {
         skipBackup: true,
       },
     };
-    launchImageLibrary(options, args => {
+    launchImageLibrary(options, response => {
       console.log('picked');
-      const {didCancel} = args;
-      if (!didCancel) {
-        console.log(args);
-        const {assets} = args;
+      if (response.didCancel) {
+        console.log('cancel res ', response);
+        return;
+      } else if (response.error) {
+        console.log('response error ', response.error);
+      } else {
+        console.log('response ', response);
+        const {assets} = response;
         if (assets !== null) {
-          setImageUri(assets[0].uri);
-          uploadImageFile();
+          uploadImageFile(assets[0].uri);
         }
       }
     });
   };
 
-  const uploadImageFile = async () => {
+  const uploadImageFile = async imageUri => {
+    const loadingMessage = {
+      _id: Date.now(),
+      text: 'uploading...',
+      user: {
+        _id: currentUserId,
+        name: name,
+        avatar: 'https://placeimg.com/140/140/any',
+      },
+      createdAt: Date.now(),
+      pending: true,
+    };
+    const msz = [loadingMessage, ...messages];
+    setMessages(msz);
+    console.log('uploadImageFile ', imageUri);
     const fileName = imageUri.substring(imageUri.lastIndexOf('/') + 1);
     try {
-      setUploading(true);
       await storage().ref(fileName).putFile(imageUri);
       const url = await storage().ref(fileName).getDownloadURL();
       console.log(url);
-      setUploading(false);
       const message = [
         {
           _id: Date.now(),
@@ -128,20 +142,20 @@ const Container = ({route}) => {
       sendMessage(message);
     } catch (error) {
       console.log(error);
-      setUploading(false);
     }
   };
 
-  const renderSend = props => {
+  const RenderSend = props => {
     return (
       <View style={styles.parentContainer}>
         <BtnRound
           icon="camera"
           iconColor={'white'}
           size={40}
+          color={'#0976DA'}
           onPress={() => choosePicture()}
         />
-        <Send {...props}>
+        <Send {...props} containerStyle={{margin: 3}}>
           <View style={styles.sendButtonWrapper}>
             <Feather name={'send'} size={18} color={'white'} />
           </View>
@@ -150,12 +164,14 @@ const Container = ({route}) => {
     );
   };
 
-  const scrollToBottomComponent = () => {
-    return <Feather name={'chevrons-down'} size={22} color={'grey'} />;
-  };
-
   return (
     <GiftedChat
+      listViewProps={{
+        style: {
+          backgroundColor: '#f3f6fb',
+          marginBottom: 16,
+        },
+      }}
       inverted
       messages={messages}
       onSend={messages => sendMessage(messages)}
@@ -164,11 +180,12 @@ const Container = ({route}) => {
         name: name,
         avatar: 'https://placeimg.com/140/140/any',
       }}
-      renderBubble={renderBubble}
+      renderBubble={RenderBubble}
       alwaysShowSend
-      renderSend={renderSend}
-      scrollToBottom
-      scrollToBottomComponent={scrollToBottomComponent}
+      renderSend={RenderSend}
+      placeholder={'Type here...'}
+      renderLoading={RenderLoading}
+      renderInputToolbar={RenderInputToolbar}
     />
   );
 };
@@ -178,16 +195,16 @@ const styles = StyleSheet.create({
   parentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 50,
   },
   sendButtonWrapper: {
-    backgroundColor: 'dodgerblue',
+    backgroundColor: '#0976DA',
     width: 40,
     height: 40,
     borderRadius: 20,
+    marginEnd: 6,
+    marginBottom: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 6,
   },
 });
 // setMessages([
