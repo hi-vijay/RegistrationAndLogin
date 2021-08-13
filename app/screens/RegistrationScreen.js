@@ -8,13 +8,33 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import TextInputLayout from '../../components/TextInputLayout';
-import AppButton from '../../components/AppButton';
+import TextInputLayout from '../components/TextInputLayout';
+import firebase from '@react-native-firebase/app';
+import AppButton from '../components/AppButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import images from '../../res/images';
-import {LargeTitle, ErrorText} from '../../styledComponent/styled';
-import * as strings from '../../res/strings';
-import Routes from '../../config/routesName';
+import images from '../assets/imagePath';
+import {LargeTitle, ErrorText} from '../styledComponent/styled';
+import Routes from '../config/routesName';
+import auth from '@react-native-firebase/auth';
+import {
+  LOGIN_STATUS,
+  APP_NAME,
+  CreateAccount,
+  Name,
+  Email,
+  Password,
+  AlreadyHvAct,
+  SignIn,
+  Submit,
+  ErrorInvalidEmailAddress,
+  ErrorLowerCaseLetterIsMissing,
+  ErrorNameRequired,
+  ErrorNumberIsMissing,
+  ErrorPasswordRequired,
+  ErrorShortName,
+  ErrorShortPassword,
+  ErrorUpperCaseIsMissing,
+} from '../assets/Strings/strings';
 
 const RegistrationScreen = ({navigation}) => {
   const [mName, setName] = useState('');
@@ -41,27 +61,54 @@ const RegistrationScreen = ({navigation}) => {
     setPasswordError('');
   };
 
-  const storeValue = async () => {
-    const user = {
-      userName: mName,
-      userEmail: mEmail,
-      userPassword: mPassword,
-    };
+  const saveUserState = async () => {
     try {
-      await AsyncStorage.setItem(
-        strings.USER_REGISTRATION_KEY,
-        JSON.stringify(user),
-      );
-      navigation.navigate(Routes.Login);
+      await AsyncStorage.setItem(LOGIN_STATUS, 'true');
     } catch (e) {
       console.log(e);
     }
   };
 
+  const saveUserName = () => {
+    const user = firebase.auth().currentUser;
+    user
+      .updateProfile({
+        displayName: mName,
+      })
+      .then(() => {
+        console.log('update successful');
+        navigation.navigate(Routes.DashboardStack);
+      })
+      .catch(error => {
+        console.log('an error occured ', error);
+      });
+  };
+
   //Registration button clicked
   const handleRegistration = () => {
     if (validate()) {
-      storeValue();
+      //storeValue();
+      auth()
+        .createUserWithEmailAndPassword(mEmail, mPassword)
+        .then(() => {
+          console.log('User account created & signed in!');
+          saveUserName();
+          saveUserState();
+          // navigation.navigate(Routes.DashboardStack);
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            console.log('That email address is already in use!');
+            setEmailError('The email is already in use');
+          }
+
+          if (error.code === 'auth/invalid-email') {
+            console.log('The email address is invalid!');
+            setEmailError('Invalid email address');
+          }
+
+          console.error(error);
+        });
       console.log('Valid data');
     }
   };
@@ -69,12 +116,12 @@ const RegistrationScreen = ({navigation}) => {
   const validate = () => {
     let result = true;
     if (mName.length < 3) {
-      setNameError(strings.ErrorShortName);
+      setNameError(ErrorShortName);
       result = false;
     }
 
     if (mName === '') {
-      setNameError(strings.ErrorNameRequired);
+      setNameError(ErrorNameRequired);
       result = false;
     }
 
@@ -83,7 +130,7 @@ const RegistrationScreen = ({navigation}) => {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!re.test(String(mEmail).toLowerCase())) {
       result = false;
-      setEmailError(strings.ErrorInvalidEmailAddress);
+      setEmailError(ErrorInvalidEmailAddress);
     }
 
     var passwordRegex = {
@@ -94,26 +141,26 @@ const RegistrationScreen = ({navigation}) => {
     };
 
     if (mPassword === '') {
-      setPasswordError(strings.ErrorPasswordRequired);
+      setPasswordError(ErrorPasswordRequired);
       return false;
     }
     if (mPassword.length < 8) {
-      setPasswordError(strings.ErrorShortPassword);
+      setPasswordError(ErrorShortPassword);
       return false;
     }
 
     if (!passwordRegex.capital.test(mPassword)) {
-      setPasswordError(strings.ErrorUpperCaseIsMissing);
+      setPasswordError(ErrorUpperCaseIsMissing);
       return false;
     }
 
     if (!passwordRegex.digit.test(mPassword)) {
-      setPasswordError(strings.ErrorNumberIsMissing);
+      setPasswordError(ErrorNumberIsMissing);
       return false;
     }
 
     if (!passwordRegex.small.test(mPassword)) {
-      setPasswordError(strings.ErrorLowerCaseLetterIsMissing);
+      setPasswordError(ErrorLowerCaseLetterIsMissing);
       return false;
     }
 
@@ -128,28 +175,27 @@ const RegistrationScreen = ({navigation}) => {
           <View style={styles.imageWrapper}>
             <Image style={styles.appImage} source={images[0]} />
           </View>
-          <Text style={styles.appNameStyle}>{strings.APP_NAME}</Text>
+          <Text style={styles.appNameStyle}>{APP_NAME}</Text>
         </View>
       </ImageBackground>
 
       {/* Bottom parent Layout */}
       <View style={styles.bottomLayoutWrapper}>
-        <LargeTitle>{strings.CreateAccount}</LargeTitle>
-        {/* <Text style={styles.welcomeText}>{strings.CreateAccount}</Text> */}
+        <LargeTitle>{CreateAccount}</LargeTitle>
 
         {/* Input layout */}
         <View style={styles.inputBackground}>
           <TextInputLayout
             style={styles.inputField}
             onChangeText={val => handleName(val)}
-            placeholder={strings.Name}
+            placeholder={Name}
             maxLength={32}
           />
           <ErrorText>{mErrorName}</ErrorText>
           <View style={{height: 22}} />
           <TextInputLayout
             onChangeText={val => handleEmail(val)}
-            placeholder={strings.Email}
+            placeholder={Email}
             maxLength={28}
             style={styles.inputField}
           />
@@ -157,7 +203,7 @@ const RegistrationScreen = ({navigation}) => {
           <View style={{height: 22}} />
           <TextInputLayout
             onChangeText={val => handlePassword(val)}
-            placeholder={strings.Password}
+            placeholder={Password}
             maxLength={28}
             secureEntry={true}
             style={styles.inputField}
@@ -166,7 +212,7 @@ const RegistrationScreen = ({navigation}) => {
         </View>
         <AppButton
           style={styles.loginButton}
-          loginText={strings.Submit}
+          loginText={Submit}
           onLoginClicked={handleRegistration}
           isEnable={true}
           progress={false}
@@ -175,10 +221,8 @@ const RegistrationScreen = ({navigation}) => {
           activeOpacity={0.8}
           onPress={() => navigation.navigate(Routes.Login)}
           style={styles.signInButtonStyle}>
-          <Text style={{color: 'grey'}}>{strings.AlreadyHvAct}</Text>
-          <Text style={{color: 'tomato', marginStart: 8}}>
-            {strings.SignIn}
-          </Text>
+          <Text style={{color: 'grey'}}>{AlreadyHvAct}</Text>
+          <Text style={{color: 'tomato', marginStart: 8}}>{SignIn}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -215,7 +259,7 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width: '100%',
-    flex: 0.8,
+    flex: 0.4,
   },
   inputBackground: {
     marginTop: 24,
@@ -275,11 +319,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   bottomLayoutWrapper: {
-    flex: 2,
+    bottom: 0,
+    top: '30%',
+    position: 'absolute',
+    width: '100%',
     flexDirection: 'column',
     borderTopEndRadius: 28,
     borderTopStartRadius: 28,
-    marginTop: -24,
     paddingHorizontal: 32,
     backgroundColor: 'white',
   },

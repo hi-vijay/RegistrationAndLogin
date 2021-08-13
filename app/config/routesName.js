@@ -8,4 +8,5 @@ export default {
   Profile: 'Profile',
   AuthStack: 'AuthStack',
   DashboardStack: 'DashboardStack',
+  ChatContainer: 'ChatContainer',
 };

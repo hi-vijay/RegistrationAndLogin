@@ -1,13 +1,13 @@
 import React from 'react';
 import {View, Image, StyleSheet, TouchableOpacity, Text} from 'react-native';
 import Badge from '../components/Badge';
-import images from '../res/images';
+import images from '../assets/imagePath';
 import Feather from 'react-native-vector-icons/Feather';
-import * as strings from '../res/strings';
+import * as strings from '../assets/Strings/strings';
 
 Feather.loadFont();
 const Card = props => {
-  console.log('card props= ', props);
+  //console.log('card props= ', props);
   const {name = '', agency, image = '', wikipedia = ''} = props.employee;
   const {index} = props;
 
@@ -18,7 +18,12 @@ const Card = props => {
     <View
       style={[styles.rootContainer, {marginTop: props.index === 0 ? 12 : 6}]}>
       {image !== '' ? (
-        <Image source={{url: image}} style={styles.profileImage} />
+        <Image
+          source={{
+            uri: image,
+          }}
+          style={styles.profileImage}
+        />
       ) : (
         <Image source={images[0]} style={styles.profileImage} />
       )}
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   deleteIconWrapper: {
-    marginTop: 16,
+    marginTop: 18,
     marginEnd: 16,
     height: 28,
   },

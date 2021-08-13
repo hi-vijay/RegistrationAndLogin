@@ -1,16 +1,28 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, Image, ImageBackground, View} from 'react-native';
-import TextInputLayout from '../../components/TextInputLayout';
-import AppButton from '../../components/AppButton';
+import TextInputLayout from '../components/TextInputLayout';
+import AppButton from '../components/AppButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDispatch} from 'react-redux';
-import {addUser} from '../../actions/actions';
-import images from '../../res/images';
-import * as strings from '../../res/strings';
-import Routes from '../../config/routesName';
-import {LargeTitle} from '../../styledComponent/styled';
+import images from '../assets/imagePath';
+import {
+  APP_NAME,
+  USER_NOT_FOUND,
+  INCORRECT_PASSWORD,
+  TOO_MANY_REQ,
+  Welcome,
+  LOGIN_STATUS,
+  CreateAccount,
+  Email,
+  Password,
+  ForgotPassword,
+  Login,
+} from '../assets/Strings/strings';
+import Routes from '../config/routesName';
+import {LargeTitle} from '../styledComponent/styled';
+import analytics from '@react-native-firebase/analytics';
+import auth from '@react-native-firebase/auth';
 
-const Login = ({navigation}) => {
+const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -52,19 +64,18 @@ const Login = ({navigation}) => {
       : setStatus(true);
   }
 
-  const dispatch = useDispatch();
+  const saveUserState = async () => {
+    try {
+      await AsyncStorage.setItem(LOGIN_STATUS, 'true');
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleLogin = async () => {
     console.log('selector email', email);
-    navigation.navigate(Routes.DashboardStack);
-    if (loginButtonStatus) {
-      return;
-    }
-    if (!loginButtonStatus) {
-      return false;
-    }
+
     setProgress(true);
-    //validate fields
     const result = validateEmail(email);
     if (!result) {
       setEmailError('Invalid Email');
@@ -72,32 +83,38 @@ const Login = ({navigation}) => {
       return;
     }
 
-    try {
-      const value = await AsyncStorage.getItem(strings.USER_REGISTRATION_KEY);
-      if (value !== null) {
-        const user = JSON.parse(value);
-        console.log('value', user);
-        if (user.userEmail === email.trim() && user.userPassword === password) {
-          dispatch(
-            addUser({
-              userName: user.userName,
-              mail: user.userEmail,
-              authToken: 'qwertyvijay',
-            }),
-          );
-          navigation.navigate(Routes.DashboardStack);
-          console.log('user validated!!!');
-        } else {
-          setProgress(false);
-          setPasswordError(strings.ErrorIncorrectEmail);
-        }
-      } else {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        saveUserState();
+        console.log('User signed in!');
+        navigation.navigate(Routes.DashboardStack);
         setProgress(false);
-      }
-    } catch (e) {
-      setProgress(false);
-      console.log(e);
-    }
+      })
+      .catch(error => {
+        const errorCode = error.code;
+        console.log(error);
+        if (errorCode === USER_NOT_FOUND) {
+          console.log('That email address is already in use!');
+        } else if (errorCode === INCORRECT_PASSWORD) {
+          console.log('incorrect password');
+          setPasswordError('Incorrect password');
+        } else if (errorCode === TOO_MANY_REQ) {
+          console.log('too many attempt');
+          setPasswordError('Too many attempts Please try after sometime');
+        }
+        setProgress(false);
+        console.error(error);
+      });
+  };
+
+  const log = async () => {
+    await analytics().logEvent('basket', {
+      id: 3745092,
+      item: 'mens grey t-shirt',
+      description: ['round neck', 'long sleeved'],
+      size: 'L',
+    });
   };
 
   return (
@@ -108,54 +125,54 @@ const Login = ({navigation}) => {
           <View style={styles.imageWrapper}>
             <Image style={styles.appImage} source={images[0]} />
           </View>
-          <Text style={styles.appNameStyle}>{strings.APP_NAME}</Text>
+          <Text style={styles.appNameStyle}>{APP_NAME}</Text>
         </View>
       </ImageBackground>
 
       {/* Bottom parent Layout */}
       <View style={styles.bottomLayoutWrapper}>
-        <LargeTitle>{strings.Welcome}</LargeTitle>
-        {/* <Text style={styles.welcomeText}>{strings.Welcome}</Text> */}
+        <LargeTitle>{Welcome}</LargeTitle>
         {/* Input layout */}
-        <View style={styles.inputBackground}>
+        <View style={{height: 24}} />
+        <View>
           <TextInputLayout
             style={styles.inputField}
             onChangeText={val => handleEmail(val)}
-            placeholder={strings.Email}
+            placeholder={Email}
             maxLength={32}
           />
           <Text style={styles.errorText}>{emailError}</Text>
           <View style={{height: 22}} />
           <TextInputLayout
             onChangeText={val => handlePassword(val)}
-            placeholder={strings.Password}
+            placeholder={Password}
             maxLength={28}
             secureEntry={true}
             style={styles.inputField}
           />
           <Text style={styles.errorText}>{passwordError}</Text>
         </View>
+        <View style={{height: 24}} />
         <AppButton
           style={styles.loginButton}
-          loginText={strings.Login}
+          loginText={Login}
           onLoginClicked={handleLogin}
           isEnable={loginButtonStatus}
           progress={mProgressBar}
         />
-        <Text style={styles.forgotPasswordStyle}>{strings.ForgotPassword}</Text>
+        <Text style={styles.forgotPasswordStyle}>{ForgotPassword}</Text>
         <AppButton
           style={styles.createAccountButton}
-          loginText={strings.CreateAccount}
+          loginText={CreateAccount}
           onLoginClicked={() => navigation.navigate(Routes.Registration)}
           isEnable={true}
-          progress={mProgressBar}
         />
       </View>
     </View>
   );
 };
 
-export default Login;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   rootContainer: {
@@ -181,7 +198,7 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width: '100%',
-    flex: 0.8,
+    flex: 0.4,
   },
   appNameStyle: {
     marginTop: 12,
@@ -191,15 +208,17 @@ const styles = StyleSheet.create({
   },
   bottomLayoutWrapper: {
     flex: 2,
+    width: '100%',
+    top: '30%',
+    bottom: 0,
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    position: 'absolute',
     flexDirection: 'column',
     borderTopEndRadius: 28,
     borderTopStartRadius: 28,
-    marginTop: -24,
     paddingHorizontal: 32,
     backgroundColor: 'white',
-  },
-  inputBackground: {
-    marginTop: 24,
   },
   inputField: {
     paddingVertical: 10,
@@ -212,7 +231,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   loginButton: {
-    marginTop: 24,
     marginHorizontal: 12,
     borderRadius: 28,
     borderWidth: 2,

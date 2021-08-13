@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {
   FlatList,
@@ -7,20 +8,27 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Image,
   BackHandler,
   StyleSheet,
 } from 'react-native';
-import {FetchData} from '../../api/apiCall';
+import {FetchData} from '../api/apiCall';
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector} from 'react-redux';
-import Card from '../../components/EmployeeCard';
-import * as strings from '../../res/strings';
-import Routes from '../../config/routesName';
+import Card from '../components/EmployeeCard';
+import images from '../assets/imagePath';
+import {
+  ExitApp,
+  ExitAppSubTitle,
+  No,
+  Yes,
+  Delete,
+} from '../assets/Strings/strings';
+import Routes from '../config/routesName';
 
 Feather.loadFont();
 
 const EmployeeList = props => {
-  const [mail, setMail] = useState('');
   const [empList, setList] = useState([]);
   const [isLoading, setLoading] = useState(true);
   console.log('rendered...');
@@ -44,26 +52,20 @@ const EmployeeList = props => {
     return state;
   });
 
-  console.log('data ', data.mail);
-  useEffect(() => {
-    setMail(data.userName);
-  }, []);
-
   const openProfile = URL => {
     props.navigation.navigate(Routes.Browser, {URI: URL});
   };
 
   const handleBackButton = () => {
-    console.log('HelloWorld');
     Alert.alert(
-      strings.ExitApp,
-      strings.ExitAppSubTitle,
+      ExitApp,
+      ExitAppSubTitle,
       [
         {
-          text: strings.No,
+          text: No,
           onPress: () => console.log('Cancel Pressed'),
         },
-        {text: strings.Yes, onPress: () => BackHandler.exitApp()},
+        {text: Yes, onPress: () => BackHandler.exitApp()},
       ],
       {cancelable: false},
     );
@@ -72,15 +74,15 @@ const EmployeeList = props => {
   const handleDelete = ({name, index}) => {
     console.log(name, index);
     Alert.alert(
-      strings.Delete,
+      Delete,
       `Delete ${name}?`,
       [
         {
-          text: strings.No,
+          text: No,
           onPress: () => console.log('Cancel Pressed'),
         },
         {
-          text: strings.Delete,
+          text: Delete,
           onPress: () => {
             const temp = Object.assign([], empList);
             temp.splice(index, 1);
@@ -95,7 +97,7 @@ const EmployeeList = props => {
   return (
     <View style={styles.rootContainer}>
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator style={{flex: 1}} />
       ) : (
         <SafeAreaView style={{flex: 1}}>
           <View style={styles.headerWrapper}>
@@ -104,24 +106,30 @@ const EmployeeList = props => {
               style={styles.backIconWrapper}>
               <Feather name="chevron-left" size={24} color={'black'} />
             </TouchableOpacity>
-            <Text style={styles.titleStyle}>{data.userName}</Text>
+            <Text style={styles.titleStyle}>Dashboard</Text>
           </View>
           <View style={styles.listWrapper}>
-            <FlatList
-              contentContainerStyle={{paddingBottom: 100}}
-              data={empList}
-              keyExtractor={({id}, index) => id}
-              renderItem={({item, index}) => {
-                return (
-                  <Card
-                    index={index}
-                    employee={item}
-                    openProfile={openProfile}
-                    onDelete={handleDelete}
-                  />
-                );
-              }}
-            />
+            {empList.length !== 0 ? (
+              <FlatList
+                contentContainerStyle={{paddingBottom: 100}}
+                data={empList}
+                keyExtractor={({id}, index) => id}
+                renderItem={({item, index}) => {
+                  return (
+                    <Card
+                      index={index}
+                      employee={item}
+                      openProfile={openProfile}
+                      onDelete={handleDelete}
+                    />
+                  );
+                }}
+              />
+            ) : (
+              <View style={styles.emptyImageWrapper}>
+                <Image source={images[11]} style={styles.emptyListImage} />
+              </View>
+            )}
           </View>
         </SafeAreaView>
       )}
@@ -137,7 +145,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 12,
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#eee',
   },
   backIconWrapper: {
     marginStart: 16,
@@ -157,6 +165,17 @@ const styles = StyleSheet.create({
   },
   listWrapper: {
     paddingBottom: 60,
+  },
+  emptyImageWrapper: {
+    flex: 1,
+    alignSelf: 'center',
+    backgroundColor: 'red',
+    marginTop: '40%',
+  },
+  emptyListImage: {
+    width: 240,
+    height: 240,
+    alignSelf: 'center',
   },
 });
 
